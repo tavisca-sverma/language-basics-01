@@ -2,7 +2,7 @@
 
 namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
 {
-      class Program
+     class Program
     {
         static void Main(string[] args)
         {
@@ -19,61 +19,72 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
             Console.WriteLine($"{args} : {result}");
         }
 
-        public static int GetResult(String obtained,String given){//method to compare strings for corretness and get final reslut
-            int toreturn;
-            if(obtained.Length!=given.Length)//check for equal length 
-                 toreturn=-1;
-                 else{
-                     int temp=given.IndexOf("?");
-                     String finalgiven=given.Replace('?',obtained[temp]);
-                     int check=finalgiven.CompareTo(obtained);
-                     if(check==0)//for true
-                     {
-                         toreturn=obtained[temp]-'0';
-                     }else{
-                         toreturn=-1;
-                     }
-                 }
-          return toreturn;
-         }
-
+        
+    
         public static int FindDigit(string equation)
         {
             // Add your code here.
-            int star,equal,questionmark;//for storing index position in String of symbols
             int result=-1;//to return
-            String obtained,given; 
-            double a,b,c;//to store numbers as a*b=c
-            star=equation.IndexOf("*");
-            equal=equation.IndexOf("=");
-            questionmark=equation.IndexOf("?");
-            
-            if(questionmark>equal){//if questionmark mark on RHS
-                 a=Convert.ToDouble(equation.Substring(0,star));
-                 b=Convert.ToDouble(equation.Substring(star+1,equal-star-1));
-                 c=a*b;
-                  obtained=c.ToString();
-                  given=equation.Substring(equal+1);
-                 result=GetResult(obtained,given);
+            String[] arrayofnumbers=equation.Split('*','=');//stores numbers 
+
+            //detection of questionmark and then proceed to computation
+            if(arrayofnumbers[0].Contains('?')){
+                result=Compute(arrayofnumbers,0);
+            }else if(arrayofnumbers[1].Contains('?')){
+                result=Compute(arrayofnumbers,1);
             }else{
-              if(questionmark<star){//if question mark on first number
-                 b=Convert.ToDouble(equation.Substring(star+1,equal-star-1));
-                 c=Convert.ToDouble(equation.Substring(equal+1));
-                 a=c/b;
-                  obtained=a.ToString();
-                  given=equation.Substring(0,star);
-                 result=GetResult(obtained,given);
-              }else{//if question mark on second number
-                 a=Convert.ToDouble(equation.Substring(0,star));
-                 c=Convert.ToDouble(equation.Substring(equal+1));
-                 b=c/a;
-                  obtained=b.ToString();
-                  given=equation.Substring(star+1,equal-star-1);
-                 result=GetResult(obtained,given);
-              }
+                result=Compute(arrayofnumbers,2);
             }
 
             return result;
         }
+
+     public static int Compute(String[] arrayofnumbers,int tofind){//analyse the number and compute
+         double multiplier1,multiplier2,multiplicationresult;
+         int result=0;
+          if(tofind==0){//0 means multiplier1 has to be found
+               multiplier2=Convert.ToDouble(arrayofnumbers[1]);
+               multiplicationresult=Convert.ToDouble(arrayofnumbers[2]);
+               multiplier1=multiplicationresult/multiplier2;
+
+              result=Compare(multiplier1,arrayofnumbers[0]);
+
+          }else if(tofind==1){
+              multiplier1=Convert.ToDouble(arrayofnumbers[0]);
+              multiplicationresult=Convert.ToDouble(arrayofnumbers[2]);
+              multiplier2=multiplicationresult/multiplier1;
+
+              result=Compare(multiplier2,arrayofnumbers[1]);
+
+          }else{
+              multiplier1=Convert.ToDouble(arrayofnumbers[0]);
+              multiplier2=Convert.ToDouble(arrayofnumbers[1]);
+              multiplicationresult=multiplier1*multiplier2;
+
+              result=Compare(multiplicationresult,arrayofnumbers[2]);
+          }
+
+      return result;
+     }
+
+     public static int Compare(double computedvalue,String actual){//analyse computed result with given value
+            int result;
+            String computed=computedvalue.ToString();//conversion to String for comparison
+
+            int indexOfmark=actual.IndexOf("?");
+            String actualmodified =actual.Replace('?',computed[indexOfmark]);//replacing the question mark
+
+            int check=actualmodified.CompareTo(computed);//comparison
+             if(check==0)//for true
+              {
+                result=computed[indexOfmark]-'0';//getting the answer from string by converting to intege
+               }else{
+                    result=-1;//return -1 if not same
+                     }
+                    
+                 
+          return result;
+         }
+
     }
 }
